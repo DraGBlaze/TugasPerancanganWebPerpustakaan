@@ -1,7 +1,5 @@
 import Logs from "../models/ModelLog.js";
 import Books from "../models/ModelBook.js";
-import { where } from "sequelize";
-import status from "statuses";
 
 export const getLogs = async (req, res) => {
     try {
@@ -45,6 +43,19 @@ export const postLogs = async (req, res) => {
     try {
 
         const { kode_buku } = req.body;
+
+        const pinjamanAktif = await Logs.findOne({
+            where: {
+                user_id: req.userId,
+                status: ["pending", "dipinjam"]
+            }
+        });
+
+        if (pinjamanAktif) {
+            return res.status(400).json({
+                msg: "Anda masih memiliki buku yang belum dikembalikan"
+            });
+        }
 
         const book = await Books.findOne({
             where: { kode_buku }
@@ -155,20 +166,15 @@ export const deleteLog = async (req, res) => {
         }
 
 
-        const log = await Logs.findByPk(req.params.id)
-        if (!log) {
-            return res.status(404).json({ msg: "Logs tidak ditemukan "})
+        const logs = await Logs.findByPk(req.params.id)
+        if (!logs) {
+            return res.status(404).json({ msg: "Log tidak ditemukan "})
         }
 
-        await Logs.destroy({
-            where: {
-                id : req.params.id
-            }
-        });
         
-        await Logs.destroy();
+        await logs.destroy();
 
-        res.json({ msg: "Logs Berhasil dihapus"})
+        res.json({ msg: "Log Berhasil dihapus"})
 
     } catch (error) {
         console.error();

@@ -26,6 +26,7 @@ const Logs = db.define(
     },
     {
         freezeTableName: true,
+        paranoid: true,
     }
 );
 

@@ -126,24 +126,17 @@ export const roleStaff = async (req, res) => {
     }
 };
 
-export const UpdateUser = async (req, res) => {
+export const updateMe = async (req, res) => {
     try {
-        const { username, email, password, confPass, role } = req.body;
+        const { username,password, confPass } = req.body;
 
-        const user = await Users.findByPk(req.params.id);
+        const user = await Users.findByPk(req.userId);
         if (!user) {
             return res.status(404).json({ msg: "User tidak ditemukan" });
         }
+ 
 
-        // user biasa hanya boleh update dirinya sendiri
-        if (req.role !== "admin" && req.userId !== user.id) {
-            return res.status(403).json({ msg: "Akses ditolak" });
-        }
-
-        let updateData = {
-            username,
-            email
-        };
+        const updateData = { username };
 
         // jika ganti password
         if (password) {
@@ -151,17 +144,63 @@ export const UpdateUser = async (req, res) => {
                 return res.status(400).json({ msg: "Password tidak cocok" });
             }
             const salt = await bcrypt.genSalt();
-            updateData.password = await bcrypt.hash(password, salt);
-        }
-
-        // hanya admin boleh ubah role
-        if (req.role === "admin" && role) {
-            updateData.role = role;
+            const hashPassword = await bcrypt.hash(password, salt);
+        
+            updateData.password = hashPassword;
+            updateData.confPass = hashPassword;
         }
 
         await user.update(updateData);
 
-        res.json({ msg: "User berhasil diperbarui" });
+        res.json({ msg: "Profil berhasil diperbarui" });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ msg: "Internal Server Error" });
+    }
+};
+
+export const updateAdmin = async (req, res) => {
+    try {
+        if (req.role !== "admin") {
+            return res.status(403).json({msg : "Akses ditolak"})
+        }
+
+
+        const { username, password, confPass, role } = req.body;
+
+        const user = await Users.findByPk(req.params.id);
+        if (!user) {
+            return res.status(404).json({ msg: "User tidak ditemukan" });
+        }
+ 
+
+        let updateData = {};
+        
+        if (username) {
+            updateData.username =username;
+        }
+
+
+        if (password) {
+            if (password !== confPass) {
+                return res.status(400).json({ msg: "Password tidak cocok" });
+            }
+            const salt = await bcrypt.genSalt();
+            const hashPassword = await bcrypt.hash(password, salt);
+        
+            updateData.password = hashPassword;
+            updateData.confPass = hashPassword;
+        }
+
+        if (role) {
+            updateData.role = role;
+        }
+
+        await user.update(updateData);
+        console.log("req body:", req.body);
+
+        res.json({ msg: "Profil berhasil diperbarui" });
 
     } catch (error) {
         console.error(error);

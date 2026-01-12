@@ -2,6 +2,7 @@ import express from "express";
 import db from "./config/Database.js";
 import router from "./routes/index.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 // import Books from "./models/ModelBook.js";
 // import Users from "./models/ModelUser.js";
 // import Logs from "./models/ModelLog.js";
@@ -20,6 +21,7 @@ try {
     console.log(error);
 }   
 
+app.use(cors ({Credential:true, origin:"http://localhost:3000"}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

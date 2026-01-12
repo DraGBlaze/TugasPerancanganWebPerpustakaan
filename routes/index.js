@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, Register, Login, roleStaff ,deleteUser, Logout } from "../controllers/Users.js";
+import { getUsers, Register, Login, roleStaff, updateMe, updateAdmin ,deleteUser, Logout } from "../controllers/Users.js";
 import { getBooksPublic, postBooks, getBooks, deleteBook, updateBook } from "../controllers/Books.js";
 import { getLogs, postLogs, getLogsMe, confirmBorrow, returnBorrow, deleteLog} from "../controllers/Logs.js";
 import { verifyToken } from "../middleware/VerifyToken.js";
@@ -11,9 +11,11 @@ const router = express.Router();
 router.get('/users', verifyToken,getUsers);
 router.post('/Register', Register);
 router.post('/Login', Login);
-router.get('/token', refreshToken)
-router.put('/users/update', verifyToken, getUsers)
-router.patch('/staff/:id', verifyToken, roleStaff);
+router.get('/token', refreshToken);
+router.put('/users/update', verifyToken, getUsers);
+router.patch('/admin/:id', verifyToken, roleStaff);
+router.patch('/users/me', verifyToken, updateMe);
+router.patch('/admin/users/:id', verifyToken, updateAdmin);
 router.delete('/users/delete/:id', verifyToken, deleteUser);
 router.delete('/Logout', Logout)
 
