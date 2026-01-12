@@ -1,8 +1,9 @@
 import express from "express";
 import db from "./config/Database.js";
 import router from "./routes/index.js";
+import cookieParser from "cookie-parser";
 // import Books from "./models/ModelBook.js";
-//  import Users from "./models/ModelUser.js";
+// import Users from "./models/ModelUser.js";
 // import Logs from "./models/ModelLog.js";
 import dotenv from "dotenv";
 
@@ -17,8 +18,9 @@ try {
     // await Logs.sync();
 } catch (error) {
     console.log(error);
-}
+}   
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(router);

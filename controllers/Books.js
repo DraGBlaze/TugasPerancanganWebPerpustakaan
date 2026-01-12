@@ -48,3 +48,65 @@ export const postBooks = async (req, res) => {
         console.log(error);
     }
 };
+
+export const updateBook = async (req, res) => {
+    try {
+        if (req.role === "pengunjung"){
+            return res.status(403).json({ msg: "Akses Ditolak"})
+        }
+
+        const {judul_buku, pengarang, penerbit, tahun_terbit, kategori, rak, stok} = req.body
+
+        updateData = {};
+
+        if (req.role ===  "admin") {
+            updateData = {judul_buku, pengarang, penerbit, tahun_terbit, kategori, rak, stok}
+        }
+        
+        if (req.role ===  "staf") {
+            updateData = {kategori, rak, stok}
+        }
+
+        const book = await Books.findByPk(req.params.id)
+        if (!book) {
+            return res.status(404).json({ msg: "Buku tidak ditemukan "})
+        }
+
+
+        await book.update(updateData);
+
+        res.json({ msg: "Buku Berhasil diedit"})
+
+    } catch (error) {
+        console.error();
+        res.status(500).json({ msg: "Internal Server Error"})
+    }
+};
+
+
+export const deleteBook = async (req, res) => {
+    try {
+        if (req.role === "pengunjung"){
+            return res.status(403).json({ msg: "Akses Ditolak"})
+        }
+
+        const book = await Books.findByPk(req.params.id)
+        if (!book) {
+            return res.status(404).json({ msg: "Buku tidak ditemukan "})
+        }
+
+        await book.destroy({
+            where: {
+                id : req.params.id
+            }
+        });
+        
+        await book.destroy();
+
+        res.json({ msg: "Buku Berhasil dihapus"})
+
+    } catch (error) {
+        console.error();
+        res.status(500).json({ msg: "Internal Server Error"})
+    }
+};

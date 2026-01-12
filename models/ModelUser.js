@@ -27,7 +27,10 @@ const Users = db.define(
             type: DataTypes.ENUM('admin', 'staff', 'pengunjung'),
             allowNull: true,
             defaultValue: "pengunjung"
-        }
+        },
+        refreshToken: {
+            type: DataTypes.TEXT
+        },
     },
     {
         freezeTableName: true,
