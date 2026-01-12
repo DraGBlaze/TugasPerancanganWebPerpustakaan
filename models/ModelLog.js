@@ -16,7 +16,7 @@ const Logs = db.define(
             
         },
         status: {
-            type: DataTypes.ENUM("dipinjam", "dikembalikan", "pending"),
+            type: DataTypes.ENUM("dipinjam", "dikembalikan", "pending", "ditolak"),
             allowNull: false,
         },
         diproses_oleh: {

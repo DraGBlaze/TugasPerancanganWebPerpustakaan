@@ -81,7 +81,7 @@ export const postLogs = async (req, res) => {
     }
 };
 
-export const confirmBorrow = async (req, res) => {
+export const rejectBorrow = async (req, res) => {
     try {
         if (req.role !== "staff" && req.role !== "admin"){
             return res.status(403).json({ msg: "Akses Ditolak"})
@@ -115,6 +115,35 @@ export const confirmBorrow = async (req, res) => {
         });
 
         res.json({ msg: "Buku Berhasil Dipinjam"})
+
+    } catch (error) {
+        console.error();
+        res.status(500).json({ msg: "Internal Server Error"})
+    }
+};
+
+export const confirmBorrow = async (req, res) => {
+    try {
+        if (req.role !== "staff" && req.role !== "admin"){
+            return res.status(403).json({ msg: "Akses Ditolak"})
+        }
+
+        const log = await Logs.findByPk(req.params.id)
+        if (!log) {
+            return res.status(404).json({ msg: "Log tidak ditemukan "})
+        }
+
+        if (log.status !== "pending") {
+            return res.status(400).json({ msg: "Log tidak ditemukan dalam pending"})
+        }
+
+        await log.update({
+            status : "ditolak",
+            diproses_oleh : req.userId
+        });
+        
+
+        res.json({ msg: "Peminjaman ditolak"})
 
     } catch (error) {
         console.error();
