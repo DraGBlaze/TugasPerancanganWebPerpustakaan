@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 // import Books from "./models/ModelBook.js";
 // import Users from "./models/ModelUser.js";
- import Logs from "./models/ModelLog.js";
+//  import Logs from "./models/ModelLog.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -16,7 +16,7 @@ try {
     console.log(`Database Perpustakaan Sudah Terhubung`);
     // await Books.sync();
     // await Users.sync();
-     await Logs.sync();
+    //  await Logs.sync();
 } catch (error) {
     console.log(error);
 }  

@@ -3,8 +3,13 @@ import Books from "../models/ModelBook.js";
 
 export const getLogs = async (req, res) => {
     try {
-        const log = await Logs.findAll();
-        res.json(log);
+        let logs;
+
+        
+        if (req.role === "staff" || req.role === "admin")
+            logs = await Logs.findAll();
+        
+        res.json(logs);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: `Internal Server Error` });
@@ -81,7 +86,7 @@ export const postLogs = async (req, res) => {
     }
 };
 
-export const rejectBorrow = async (req, res) => {
+export const confirmBorrow = async (req, res) => {
     try {
         if (req.role !== "staff" && req.role !== "admin"){
             return res.status(403).json({ msg: "Akses Ditolak"})
@@ -122,7 +127,7 @@ export const rejectBorrow = async (req, res) => {
     }
 };
 
-export const confirmBorrow = async (req, res) => {
+export const rejectBorrow = async (req, res) => {
     try {
         if (req.role !== "staff" && req.role !== "admin"){
             return res.status(403).json({ msg: "Akses Ditolak"})
@@ -190,11 +195,6 @@ export const returnBorrow = async (req, res) => {
 
 export const deleteLog = async (req, res) => {
     try {
-        if (req.role !== "admin"){
-            return res.status(403).json({ msg: "Akses Ditolak"})
-        }
-
-
         const logs = await Logs.findByPk(req.params.id)
         if (!logs) {
             return res.status(404).json({ msg: "Log tidak ditemukan "})

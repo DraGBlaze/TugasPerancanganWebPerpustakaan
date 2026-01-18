@@ -19,10 +19,6 @@ const Users = db.define(
             type: DataTypes.STRING,
             allowNull: false
         },
-        confPass: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
         role: {
             type: DataTypes.ENUM('admin', 'staff', 'pengunjung'),
             allowNull: true,

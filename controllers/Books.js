@@ -57,7 +57,7 @@ export const updateBook = async (req, res) => {
 
         const {judul_buku, pengarang, penerbit, tahun_terbit, kategori, rak, stok} = req.body
 
-        updateData = {};
+        let updateData = {};
 
         if (req.role ===  "admin") {
             updateData = {judul_buku, pengarang, penerbit, tahun_terbit, kategori, rak, stok}

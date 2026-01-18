@@ -24,9 +24,21 @@ export const getUsers = async (req, res) => {
 
 // Menambahkan User
 export const Register = async (req, res) => {
+    if (!req.body) {
+            return res.status(400).json({msg : "Data tidak boleh kosong"})
+        }
+
     const { username, email, password, confPass, role } = req.body;
 
     const part = email.split('@')
+
+    const sameGmail = await Users.findOne({
+        where: { email }
+    })
+
+    if (sameGmail) {
+        return res.status(409).json({ msg : "Email sudah terdaftar"})
+    }
 
     if (part.length !== 2 || part[1] !== "gmail.com") {
         return res.status(400).json({msg : "Harus pake akun gmail @gmail.com"})
@@ -39,6 +51,8 @@ export const Register = async (req, res) => {
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
     try {   
+        
+
         await Users.create({
             username: username,
             email: email,
@@ -99,33 +113,6 @@ export const Login = async (req, res) => {
     }
 };
 
-export const roleStaff = async (req, res) => {
-    try {
-        if (req.role !== "admin"){
-            return res.status(403).json({ msg: "Akses Ditolak"})
-        }
-
-        const user = await Users.findByPk(req.params.id)
-        if (!user) {
-            return res.status(404).json({ msg: "User tidak ditemukan "})
-        }
-
-        if (user.role !== "pengunjung") {
-            return res.status(400).json({ msg: "User bukan pengunjung"})
-        }
-
-        await user.update({
-            role : "staff",
-        });
-
-        res.json({ msg: "Staff Berhasil Ditambahkan"})
-
-    } catch (error) {
-        console.error();
-        res.status(500).json({ msg: "Internal Server Error"})
-    }
-};
-
 export const updateMe = async (req, res) => {
     try {
         const { username,password, confPass } = req.body;
@@ -162,11 +149,6 @@ export const updateMe = async (req, res) => {
 
 export const updateAdmin = async (req, res) => {
     try {
-        if (req.role !== "admin") {
-            return res.status(403).json({msg : "Akses ditolak"})
-        }
-
-
         const { username, password, confPass, role } = req.body;
 
         const user = await Users.findByPk(req.params.id);
